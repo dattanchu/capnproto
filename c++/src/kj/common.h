@@ -1416,7 +1416,19 @@ To& downcast(From& from) {
   }
 
 #if !KJ_NO_RTTI
+
+#ifdef __GNUC__
+// GCC 6.3 with -Werror=address will fail to build if To and From are the same type.
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Waddress"
+#endif
+
   KJ_IREQUIRE(dynamic_cast<To*>(&from) != nullptr, "Value cannot be downcast() to requested type.");
+
+#ifdef __GNUC__
+#pragma GCC diagnostic pop
+#endif
+
 #endif
 
   return static_cast<To&>(from);
